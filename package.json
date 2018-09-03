@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Abhicoding/Live-Loader#readme",
   "dependencies": {
-    "chokidar": "^2.0.4"
+    "chokidar": "^2.0.4",
+    "node-delta": "^1.0.3"
   }
 }
