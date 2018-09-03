@@ -1,0 +1,22 @@
+{
+  "name": "live-loader",
+  "version": "1.0.0",
+  "description": "My very own hot module loader",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Abhicoding/Live-Loader.git"
+  },
+  "author": "Abhishek Shingane",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Abhicoding/Live-Loader/issues"
+  },
+  "homepage": "https://github.com/Abhicoding/Live-Loader#readme",
+  "dependencies": {
+    "chokidar": "^2.0.4"
+  }
+}
