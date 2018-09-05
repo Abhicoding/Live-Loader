@@ -9,15 +9,14 @@ var watcher = chokidar.watch('watched', {ignored: /^\./, persistent: true});
 watcher
 .on('add', function(path) {console.log('File', path, 'has been added');})
 .on('change', function () {
-      console.log('change detected')
-      target = fs.readFileSync('watched/root.js')
+      target = fs.readFileSync('test/watched/root.js')
       if (!origin) {
-        origin = fs.readFileSync('write/root_clone.js')
+        origin = fs.readFileSync('test/write/root_clone.js')
       }
       delta = fossilDelta.create(origin, target)
       result = fossilDelta.apply(origin, delta)
       origin = result
-      fs.writeFile('write/root_clone.js', result, function (err) {
+      fs.writeFile('test/write/root_clone.js', result, function (err) {
         if (err) throw err;
         console.log('The file has been saved!');
       })
