@@ -1,3 +1,1 @@
-'Lets see if something change'
-'It should only emit the buffer'
-'Some interesting thing is happening here'
+console.log('Lets see if something happens see')
