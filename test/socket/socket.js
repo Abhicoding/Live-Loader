@@ -10,19 +10,19 @@ function ab2str(buf) {
 console.log('Hello')
 
 socket.on('connection', data => {
-  origin = ab2str(data)
+  origin = data
   console.log('Awaiting changes....')  // origin value needs to be set here on first connection
 })
 
 socket.on('file change', delta => {
-  console.log(origin.toString(), '***origin***')
-  console.log(delta.toString())
+  console.log(ab2str(origin), '***origin***')
+  console.log(delta.toString(), '***delta***')
   result = fossilDelta.apply(origin, delta)
   try {
     var evalFeed = ab2str(result)
     eval(evalFeed)
     console.log('Execution successful')
-    origin = evalFeed
+    origin = result
     socket.emit('merge success')
   } catch (err) {
     socket.emit('merge failed')

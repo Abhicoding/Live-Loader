@@ -14,14 +14,14 @@ var watcher = chokidar.watch(path.resolve(__dirname, '../watched'), /^\./, {pers
 app.use(express.static(path.resolve(__dirname, '../../dist/')))
 
 function emitDelta (socket) {
-  target = fs.readFileSync(path.resolve(__dirname, '../../dist/main.root.js'))
+  target = new Buffer(fs.readFileSync(path.resolve(__dirname, '../../dist/main.root.js')))
   delta = nodeDelta.create(origin, target)
   console.log('**delta**', delta.toString())
-  console.log('**origin**', typeof origin)
+  console.log('**origin**', origin.toString())
   console.log('***final***', nodeDelta.apply(origin, delta))
   socket.emit('file change', delta)
   socket.on('merge success', () => {
-    origin = target.toString()
+    origin = target
     delta = null
   })
   socket.on('merge failed', () => {
@@ -30,7 +30,7 @@ function emitDelta (socket) {
 }
 
 io.on('connection', (socket) => {
-  origin = fs.readFileSync(path.resolve(__dirname, '../../dist/main.root.js')).toString()
+  origin = new Buffer(fs.readFileSync(path.resolve(__dirname, '../../dist/main.root.js')))
   socket.emit('connection', origin)
   watcher.on('add', () => emitDelta(socket))
   watcher.on('change', () => emitDelta(socket))
