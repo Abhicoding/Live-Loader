@@ -5,46 +5,53 @@ var path = require('path')
 var io = require('socket.io')(http)
 var fs = require('fs')
 var chokidar = require('chokidar')
-var nodeDelta = require('fossil-delta')
-var origin, delta, connection
+var fossilDelta = require('fossil-delta')
+var origin, delta, target
 
 var PORT = process.env.PORT || 3000
-var watcher = chokidar.watch(path.resolve(__dirname, '../../dist/main.root.js'), /^\./, {persistent : true})
 
 app.use(express.static(path.resolve(__dirname, '../../dist/')))
 
-function emitDelta (socket) {
-    target = fs.readFileSync(path.resolve(__dirname, '../../dist/main.root.js'))
-    delta = nodeDelta.create(origin, target)
-    console.log('**delta**', Array.isArray(delta))
-    console.log('**target**', target.toString())
-    var temp = nodeDelta.apply(origin, delta)
-    console.log('***final***', String.fromCharCode.apply(null, new Uint8Array(temp)))
-    socket.emit('file change', delta)
-    socket.on('merge success', () => {
-      origin = target
-      delta = null
-    })
-    socket.on('merge failed', () => {
-      console.log('merge unsuccessful')
-    })
+var watcher = chokidar.watch(path.resolve(__dirname, '../../dist/main.root.js'), /^\./, {persistent : true})
+
+io.on('connection', socket => socket.emit('live', 'Hello from server'))
+
+watcher
+  .on('add', path => {
+    setTimeout(() => fs.readFile (path, 'utf8', (err, data) => {
+      if (err) {
+        console.log(err)
+      } else {
+        origin = data
+        console.log('**origin***', data)
+      }
+    }), 999)
+  })
+  .on('change', path => {
+    // console.log(`File ${path} has been changed`)
+    setTimeout(() => fs.readFile (path, 'utf8', (err, data) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log('**origin***', origin)
+        // console.log('**delta***', delta)
+        if (!target) {
+          io.emit('originFile', {origin:  origin})
+        }
+        target = data
+        delta = createDelta(target, origin)
+        console.log('***result***', fossilDelta.apply(origin, delta).join(''))
+        io.emit('fileChange', {delta: delta})
+        // console.log('**target***', target)
+        origin = target
+      }
+    }), 1000)
+  })
+
+function createDelta (target) {
+  return fossilDelta.create(origin, target)
 }
 
-io.on('connection', (socket) => {
-  // if (connection === true) {
-  //   io.removeAllListeners()
-  // }
-  connection = true
-  origin = fs.readFileSync(path.resolve(__dirname, '../../dist/main.root.js'))
-  console.log('**origin**', origin.toString())
-  socket.emit('connection', origin)
-  watcher.on('add', () => {
-    console.log(this)
-    return emitDelta(socket)})
-  watcher.on('change', () => {
-    return emitDelta(socket)})
-  // watcher.on('unlink', emitDelta(socket))
-})
 
 app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../../dist/socket.html'))
