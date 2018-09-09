@@ -4,7 +4,10 @@
   "description": "My very own hot loader",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "node test/socket/server.js",
+    "bundle": "webpack test/socket/socket.js -o dist/main.js",
+    "watch" : "webpack test/watched/root.js -o dist/main.root.js -w"
   },
   "repository": {
     "type": "git",

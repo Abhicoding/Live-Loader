@@ -18,14 +18,15 @@ io.on('connection', socket => socket.emit('live', 'Hello from server'))
 
 watcher
   .on('add', path => {
-    setTimeout(() => fs.readFile (path, 'utf8', (err, data) => {
-      if (err) {
-        console.log(err)
-      } else {
-        origin = data
-        console.log('**origin***', data)
-      }
-    }), 999)
+    // setTimeout(() => fs.readFile (path, 'utf8', (err, data) => {
+    //   if (err) {
+    //     console.log(err)
+    //   } else {
+    //     origin = data
+    //     console.log('**origin***', data)
+    //   }
+    // }), 999)
+    console.log(`file added from ${path}`)
   })
   .on('change', path => {
     // console.log(`File ${path} has been changed`)
@@ -33,24 +34,26 @@ watcher
       if (err) {
         console.log(err)
       } else {
-        console.log('**origin***', origin)
+        // console.log('**origin***', origin)
         // console.log('**delta***', delta)
-        if (!target) {
-          io.emit('originFile', {origin:  origin})
-        }
-        target = data
-        delta = createDelta(target, origin)
-        console.log('***result***', fossilDelta.apply(origin, delta).join(''))
-        io.emit('fileChange', {delta: delta})
-        // console.log('**target***', target)
-        origin = target
+        // if (!target) {
+        //   io.emit('originFile', {origin:  origin})
+        // }
+        console.log('***Printing read result***', data)
+        io.emit('fileUpdate', {'file': data})
+        // target = data
+        // delta = createDelta(target, origin)
+        // console.log('***result***', fossilDelta.apply(origin, delta).join(''))
+        // io.emit('fileChange', {delta: delta})
+        // //console.log('**target***', target)
+        // origin = target
       }
     }), 1000)
   })
 
-function createDelta (target) {
-  return fossilDelta.create(origin, target)
-}
+// function createDelta (target) {
+//   return fossilDelta.create(origin, target)
+// }
 
 
 app.get('/', (req, res) => {

@@ -12,14 +12,24 @@ socket.on('live', data => {
 })
 
 socket.on('originFile', data => {
-  // console.log('Got origin', data.origin)
+  console.log('Got origin', data.origin)
   origin = data.origin
 })
 
-socket.on('fileChange', data => {
-  // console.log('Merging this origin', origin)
-  mergeDelta(origin, data.delta)
+// socket.on('fileChange', data => {
+//   console.log('Merging this origin', origin)
+//   mergeDelta(origin, data.delta)
+// })
+
+socket.on('fileUpdate', data => {
+  console.log('got data')
+  try {
+    eval(data.file)
+  } catch (err) {
+    console.error(err)
+  }
 })
+
 
 // socket.on('deltaReceived', data => {
 //   console.log('got delta', data)
@@ -41,7 +51,10 @@ socket.on('fileChange', data => {
 // })
 
 function mergeDelta (origin, delta) {
+  console.log('***origin***', origin)
+  // eval(origin)
   result = fossilDelta.apply(origin, delta).join('')
+  console.log('***result***')
   eval(result)
   // console.log(origin, '***origin***')
   // console.log(result, '***result***')
