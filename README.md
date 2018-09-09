@@ -35,6 +35,6 @@ For theory of how HMR works following text was referred:
   The fossil-delta creates target files inconsistently and contains errors
  </li>
  <li>
-  The watcher keeps the file busy long after the change event is emitted. This cause the fs.read to return empty string as file content which causes problems.
+  The watcher keeps the file busy long after the change event is emitted. This causes the fs.read to return an empty string as file content. This causes problems.
  </li>
  </ul>
